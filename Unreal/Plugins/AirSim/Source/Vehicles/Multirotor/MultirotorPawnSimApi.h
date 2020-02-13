@@ -26,6 +26,8 @@ public:
     typedef MultirotorPawnEvents::RotorInfo RotorInfo;
 
 public:
+    virtual void initialize() override;
+
     virtual ~MultirotorPawnSimApi() = default;
 
     //VehicleSimApiBase interface
@@ -36,15 +38,12 @@ public:
 
     //PhysicsBody interface
     //this just wrapped around MultiRotor physics body
-    virtual void reset() override;
+    virtual void resetImplementation() override;
     virtual void update() override;
     virtual void reportState(StateReporter& reporter) override;
     virtual UpdatableObject* getPhysicsBody() override;
 
     virtual void setPose(const Pose& pose, bool ignore_collision) override;
-    virtual const msr::airlib::Kinematics::State* getGroundTruthKinematics() const override;
-    virtual const msr::airlib::Environment* getGroundTruthEnvironment() const override;
-
     virtual void pawnTick(float dt) override;
 
     msr::airlib::MultirotorApiBase* getVehicleApi() const

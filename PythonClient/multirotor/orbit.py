@@ -1,6 +1,6 @@
 import setup_path 
 import airsim
-
+import os
 import sys
 import math
 import time
@@ -38,7 +38,7 @@ class OrbitNavigator:
         # center is just a direction vector, so normalize it to compute the actual cx,cy locations.
         cx = float(center[0])
         cy = float(center[1])
-        length = math.sqrt(cx*cx)+(cy*cy)
+        length = math.sqrt((cx*cx) + (cy*cy))
         cx /= length
         cy /= length
         cx *= self.radius
@@ -97,7 +97,9 @@ class OrbitNavigator:
         ramptime = self.radius / 10
         self.start_time = time.time()        
 
-        while count < self.iterations and self.snapshot_index < self.snapshots:
+        while count < self.iterations:
+            if self.snapshots > 0 and not (self.snapshot_index < self.snapshots):
+                break
             # ramp up to full speed in smooth increments so we don't start too aggressively.
             now = time.time()
             speed = self.speed

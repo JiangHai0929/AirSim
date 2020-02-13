@@ -21,6 +21,7 @@ public:
     typedef msr::airlib::Pose Pose;
     
 public:
+    virtual void initialize() override;
     virtual ~CarPawnSimApi() = default;
 
     //VehicleSimApiBase interface
@@ -28,9 +29,8 @@ public:
     CarPawnSimApi(const Params& params,
         const CarPawnApi::CarControls&  keyboard_controls, UWheeledVehicleMovementComponent* movement);
 
-    virtual void reset() override;
+    virtual void resetImplementation() override;
     virtual void update() override;
-    virtual void reportState(StateReporter& reporter) override;
 
     virtual std::string getRecordFileLine(bool is_header_line) const override;
 
@@ -52,6 +52,8 @@ private:
     void updateCarControls();
 
 private:
+    Params params_;
+
     std::unique_ptr<msr::airlib::CarApiBase> vehicle_api_;
     std::vector<std::string> vehicle_api_messages_;
 

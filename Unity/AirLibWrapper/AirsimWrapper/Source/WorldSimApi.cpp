@@ -30,6 +30,13 @@ void WorldSimApi::continueForTime(double seconds)
 	simmode_->continueForTime(seconds);
 }
 
+void WorldSimApi::setTimeOfDay(bool is_enabled, const std::string& start_datetime, bool is_start_datetime_dst,
+    float celestial_clock_speed, float update_interval_secs, bool move_sun)
+{
+    simmode_->setTimeOfDay(is_enabled, start_datetime, is_start_datetime_dst,
+        celestial_clock_speed, update_interval_secs, move_sun);
+}
+
 bool WorldSimApi::setSegmentationObjectID(const std::string& mesh_name, int object_id, bool is_name_regex)
 {
 	return SetSegmentationObjectId(mesh_name.c_str(), object_id, is_name_regex);
@@ -45,6 +52,14 @@ void WorldSimApi::printLogMessage(const std::string& message, const std::string&
 	PrintLogMessage(message.c_str(), message_param.c_str(), vehicle_name_.c_str(), severity);
 }
 
+std::vector<std::string> WorldSimApi::listSceneObjects(const std::string& name_regex) const
+{
+	std::vector<std::string> result;
+	throw std::invalid_argument(common_utils::Utils::stringf(
+		"simListSceneObject is not supported on unity").c_str());
+	return result;
+}
+
 WorldSimApi::Pose WorldSimApi::getObjectPose(const std::string& object_name) const
 {
 	AirSimUnity::AirSimPose airSimPose = GetPose(object_name.c_str());
@@ -57,6 +72,17 @@ bool WorldSimApi::setObjectPose(const std::string& object_name, const WorldSimAp
 	return SetPose(airSimPose, false, object_name.c_str());
 }
 
+void WorldSimApi::enableWeather(bool enable)
+{
+    unused(enable);
+    //TODO: implement weather for Unity
+}
+void WorldSimApi::setWeatherParameter(WeatherParameter param, float val)
+{
+    unused(param);
+    unused(val);
+    //TODO: implement weather for Unity
+}
 
 #pragma region Character
 // Not implemented, just added for compilation.

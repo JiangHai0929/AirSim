@@ -17,11 +17,6 @@ class VehicleSimApiBase : public msr::airlib::UpdatableObject {
 public:
     virtual ~VehicleSimApiBase() = default;
 
-    //default implementation so derived class doesn't have to call on UpdatableObject
-    virtual void reset() override
-    {
-        UpdatableObject::reset();
-    }
     virtual void update() override
     {
         UpdatableObject::update();
@@ -48,6 +43,8 @@ public:
         return const_cast<ImageCaptureBase*>(static_cast<const VehicleSimApiBase*>(this)->getImageCapture());
     }
 
+    virtual void initialize() = 0;
+
     virtual std::vector<ImageCaptureBase::ImageResponse> getImages(const std::vector<ImageCaptureBase::ImageRequest>& request) const = 0;
     virtual std::vector<uint8_t> getImage(const std::string& camera_name, ImageCaptureBase::ImageType image_type) const = 0;
 
@@ -71,7 +68,6 @@ public:
     {
         return AirSimSettings::singleton().getVehicleSetting(getVehicleName());
     }
-
 };
 
 } } //namespace

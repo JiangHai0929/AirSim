@@ -26,10 +26,8 @@ public:
     }
 
     //*** Start: UpdatableState implementation ***//
-    virtual void reset() override
+    virtual void resetImplementation() override
     {
-        LidarBase::reset();
-
         freq_limiter_.reset();
         last_time_ = clock()->nowNanos();
 
@@ -68,7 +66,7 @@ public:
 
 protected:
     virtual void getPointCloud(const Pose& lidar_pose, const Pose& vehicle_pose, 
-        TTimeDelta delta_time, vector<real_T>& point_cloud) = 0;
+        TTimeDelta delta_time, vector<real_T>& point_cloud, vector<int>& segmentation_cloud) = 0;
 
     
 private: //methods
@@ -80,23 +78,37 @@ private: //methods
 
         const GroundTruth& ground_truth = getGroundTruth();
 
+        // calculate the pose before obtaining the point-cloud. Before/after is a bit arbitrary
+        // decision here. If the pose can change while obtaining the point-cloud (could happen for drones)
+        // then the pose won't be very accurate either way.
+        //
+        // TODO: Seems like pose is in vehicle inertial-frame (NOT in Global NED frame).
+        //    That could be a bit unintuitive but seems consistent with the position/orientation returned as part of 
+        //    ImageResponse for cameras and pose returned by getCameraInfo API.
+        //    Do we need to convert pose to Global NED frame before returning to clients?
+        Pose lidar_pose = params_.relative_pose + ground_truth.kinematics->pose;
         getPointCloud(params_.relative_pose, // relative lidar pose
             ground_truth.kinematics->pose,   // relative vehicle pose
-            delta_time, 
-            point_cloud_);
+            delta_time,
+            point_cloud_,
+            segmentation_cloud_
+        );
 
         LidarData output;
         output.point_cloud = point_cloud_;
         output.time_stamp = clock()->nowNanos();
+        output.pose = lidar_pose;            
 
         last_time_ = output.time_stamp;
 
         setOutput(output);
+        setSegmentationOutput(segmentation_cloud_);
     }
 
 private:
     LidarSimpleParams params_;
     vector<real_T> point_cloud_;
+    vector<int> segmentation_cloud_;
 
     FrequencyLimiter freq_limiter_;
     TTimePoint last_time_;

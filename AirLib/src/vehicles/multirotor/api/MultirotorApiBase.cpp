@@ -13,12 +13,10 @@
 
 namespace msr { namespace airlib {
 
-void MultirotorApiBase::reset()
+void MultirotorApiBase::resetImplementation()
 {
     cancelLastTask();
     SingleTaskCall lock(this); //cancel previous tasks
-
-    VehicleApiBase::reset();
 }
 
 bool MultirotorApiBase::takeoff(float timeout_sec)
@@ -664,7 +662,7 @@ float MultirotorApiBase::setNextPathPosition(const vector<Vector3r>& path, const
         offset = 0;
 
         if (&cur_path_loc == &next_path_loc)
-            Utils::log(Utils::stringf("segment %d done: x=%f, y=%f, z=%f", i, path.at(i).x(), path.at(i).z(), path.at(i).z()));
+            Utils::log(Utils::stringf("segment %d done: x=%f, y=%f, z=%f", i, path.at(i).x(), path.at(i).y(), path.at(i).z()));
 
         ++i;
     }
